@@ -5,7 +5,7 @@
 
 ### Стек технологий
 * [Python](https://www.python.org/)
-* Библиотека [PyTermGUI](https://github.com/bczsalba/pytermgui)
+* Библиотека [curses](https://docs.python.org/3/library/curses.html)
 
 ### Реализуемый функционал
 ##### Алгоритм работы пользователя с ```Pyvim```:
