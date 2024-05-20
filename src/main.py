@@ -1,14 +1,15 @@
 import curses
 import sys
 
-from app_ui import AppUI
+from .app_ui import AppUI
+from .key_bindings import key_bindings
 
 
 def main(window):
     curses.use_default_colors()
     window.clear()
     window.move(0, 0)
-    AppUI(window, curses.LINES, curses.COLS - 1).run()
+    AppUI(window, curses.LINES, curses.COLS - 1, key_bindings).run()
 
 
 if __name__ == '__main__':

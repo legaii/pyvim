@@ -4,10 +4,14 @@ class Mode:
 
 
     def draw(self):
-        if self.mode_id == 0:
-            return ''
-        elif self.mode_id == 1:
+        if self.mode_id == 1:
             return '-- INSERT --'
+        else:
+            return ''
+
+
+    def __eq__(self, other):
+        return self.mode_id == other.mode_id
 
 
     @classmethod
@@ -21,5 +25,5 @@ class Mode:
 
 
     @classmethod
-    def command_mode(cls):
+    def quit_mode(cls):
         return cls(2)
