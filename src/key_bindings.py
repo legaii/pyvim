@@ -60,6 +60,22 @@ def prev_char_callback(app_state):
     app_state.buffer.move_char(-1)
 
 
+def next_word_callback(app_state):
+    app_state.buffer.go_to_next_word()
+
+
+def prev_word_callback(app_state):
+    app_state.buffer.go_to_prev_word()
+
+
+def line_begin_callback(app_state):
+    app_state.buffer.go_to_line_begin()
+
+
+def line_end_callback(app_state):
+    app_state.buffer.go_to_line_end()
+
+
 ESCAPE = chr(27)
 
 key_bindings = [
@@ -69,6 +85,10 @@ key_bindings = [
     KeyBinding(Mode.normal_mode(), re.compile('j'), next_line_callback),
     KeyBinding(Mode.normal_mode(), re.compile('k'), prev_line_callback),
     KeyBinding(Mode.normal_mode(), re.compile('l'), next_char_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('w'), next_word_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('b'), prev_word_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('0'), line_begin_callback),
+    KeyBinding(Mode.normal_mode(), re.compile(r'\$'), line_end_callback),
     KeyBinding(Mode.normal_mode(), re.compile(':q\n'), quit_callback),
     KeyBinding(Mode.normal_mode(), re.compile('\n'), lambda _: None),
     KeyBinding(Mode.insert_mode(), re.compile(ESCAPE), switch_to_normal_mode),
