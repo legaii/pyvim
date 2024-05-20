@@ -14,12 +14,21 @@ class AppUI:
         self.key_bindings = key_bindings
 
 
+    @staticmethod
+    def transform_key(key):
+        return {
+            'KEY_BACKSPACE': '\b',
+            'KEY_LEFT': 'h',
+            'KEY_DOWN': 'j',
+            'KEY_UP': 'k',
+            'KEY_RIGHT': 'l',
+        }.get(key, key)
+
+
     def run(self):
-        self.redraw()
         while self.state.mode != Mode.quit_mode():
-            key = self.window.getkey()
-            if key == 'KEY_BACKSPACE':
-                key = '\b'
+            self.redraw()
+            key = self.transform_key(self.window.getkey())
             if len(key) == 1:
                 self.read_char(key)
 
@@ -30,7 +39,6 @@ class AppUI:
             if key_binding.check(self.key_binding_prefix, self.state):
                 self.key_binding_prefix = ""
                 break
-        self.redraw()
 
 
     def redraw(self):
@@ -39,5 +47,5 @@ class AppUI:
         status_line += ' ' * (self.cols_cnt - len(status_line) - len(mode_line))
         status_line += mode_line
         self.window.addstr(self.lines_cnt - 1, 0, status_line, curses.A_BOLD)
-        self.state.buffer.draw(self.window, self.lines_cnt, self.cols_cnt)
+        self.state.buffer.draw(self.window, self.lines_cnt - 1, self.cols_cnt)
         self.window.refresh()

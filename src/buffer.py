@@ -15,21 +15,24 @@ class Buffer:
             file.write('\n'.join(content))
 
 
-    def current_pos(self):
-        return (self.current_line, self.current_char)
-
-
-    def last_pos(self):
-        return (len(self.content) - 1, len(self.content[-1]))
-
-
     def adjust_pos(self):
+        if self.current_line < 0:
+            self.current_line = 0
+        elif self.current_line >= len(self.content):
+            self.current_line = len(self.content) - 1
         if self.current_char < 0:
             self.current_char = 0
+        elif self.current_char > len(self.content[self.current_line]):
+            self.current_char = len(self.content[self.current_line])
 
 
     def move_line(self, delta):
         self.current_line += delta
+        self.adjust_pos()
+
+
+    def move_char(self, delta):
+        self.current_char += delta
         self.adjust_pos()
 
 

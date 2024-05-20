@@ -44,11 +44,31 @@ def insert_char_callback(app_state, char):
     app_state.buffer.insert(char)
 
 
+def next_line_callback(app_state):
+    app_state.buffer.move_line(1)
+
+
+def prev_line_callback(app_state):
+    app_state.buffer.move_line(-1)
+
+
+def next_char_callback(app_state):
+    app_state.buffer.move_char(1)
+
+
+def prev_char_callback(app_state):
+    app_state.buffer.move_char(-1)
+
+
 ESCAPE = chr(27)
 
 key_bindings = [
     KeyBinding(Mode.normal_mode(), re.compile('.*' + ESCAPE), lambda _: None),
     KeyBinding(Mode.normal_mode(), re.compile('i'), switch_to_insert_mode),
+    KeyBinding(Mode.normal_mode(), re.compile('h'), prev_char_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('j'), next_line_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('k'), prev_line_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('l'), next_char_callback),
     KeyBinding(Mode.normal_mode(), re.compile(':q\n'), quit_callback),
     KeyBinding(Mode.normal_mode(), re.compile('\n'), lambda _: None),
     KeyBinding(Mode.insert_mode(), re.compile(ESCAPE), switch_to_normal_mode),
