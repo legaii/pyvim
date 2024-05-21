@@ -1,11 +1,17 @@
 import curses
 
+from .key_bindings import KeyBinding
 from .app_state import AppState
 from .mode import Mode
 
 
 class AppUI:
-    def __init__(self, window, lines_cnt, cols_cnt, file, key_bindings):
+    """Класс для взаимодействия между пользователем и AppState"""
+
+    def __init__(self,
+        window: curses.window, lines_cnt: int, cols_cnt: int,
+        file: int, key_bindings: list[KeyBinding]
+    ):
         self.window = window
         self.lines_cnt = lines_cnt
         self.cols_cnt = cols_cnt
@@ -15,7 +21,8 @@ class AppUI:
 
 
     @staticmethod
-    def transform_key(key):
+    def transform_key(key: str):
+        """Функция, преобразующая нестандартный ввод от пользователя в более удобный вид"""
         return {
             'KEY_BACKSPACE': '\b',
             'KEY_LEFT': 'h',
@@ -26,6 +33,7 @@ class AppUI:
 
 
     def run(self):
+        """Функция отлавливает нажатия по клавиатуре и обновляет окно приложения"""
         while self.state.mode != Mode.quit_mode():
             self.redraw()
             key = self.transform_key(self.window.getkey())
@@ -33,7 +41,8 @@ class AppUI:
                 self.read_char(key)
 
 
-    def read_char(self, char):
+    def read_char(self, char: str):
+        """Функция обрабатывает символ char, введенный с клавиатуры"""
         self.key_binding_prefix += char
         for key_binding in self.key_bindings:
             if key_binding.check(self.key_binding_prefix, self.state):
@@ -42,6 +51,7 @@ class AppUI:
 
 
     def redraw(self):
+        """Функция с нуля перерисовывает текстовое окно приложения"""
         status_line = self.key_binding_prefix
         mode_line = self.state.mode.draw()
         status_line += ' ' * (self.cols_cnt - len(status_line) - len(mode_line))

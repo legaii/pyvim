@@ -1,15 +1,23 @@
-def is_not_space(char):
+import curses
+from typing import Callable
+
+
+def is_not_space(char: str):
+    """Функция, проверяющая, является ли символ char пробельным символом"""
     return not char.isspace()
 
 
 class Buffer:
+    """Класс для хранения содержимого буфера и текущего положения курсора"""
+
     def __init__(self):
         self.content = ['']
         self.current_line = 0
         self.current_char = 0
 
 
-    def read_from(self, path):
+    def read_from(self, path: str):
+        """Считывает содержимое файла с путем path"""
         try:
             with open(path, 'r') as file:
                 self.content = file.read().split('\n')
@@ -17,12 +25,14 @@ class Buffer:
             pass
 
 
-    def write_to(self, path):
+    def write_to(self, path: str):
+        """Записывает (обновляет) содержимое файла с путем path"""
         with open(path, 'w') as file:
             file.write('\n'.join(self.content))
 
 
     def adjust_pos(self):
+        """Эта функция сдвигает курсор к ближайшему корректному положению"""
         if self.current_line < 0:
             self.current_line = 0
             self.current_char = 0
@@ -37,21 +47,25 @@ class Buffer:
             self.current_char = len(self.content[self.current_line])
 
 
-    def move_line(self, delta):
+    def move_line(self, delta: int):
+        """Перемещает курсор по оси y на delta"""
         self.current_line += delta
         self.adjust_pos()
 
 
-    def move_char(self, delta):
+    def move_char(self, delta: int):
+        """Перемещает курсор по оси x на delta"""
         self.current_char += delta
         self.adjust_pos()
 
 
     def is_end_of_line(self):
+        """Функция проверяет, стоит ли курсор на конце строчки"""
         return self.current_char == len(self.content[self.current_line])
 
 
-    def check_under_cursor(self, predicate):
+    def check_under_cursor(self, predicate: Callable[[str], bool]):
+        """Функция проверяет, что символ под курсором существует и удовлетворяет предикату predicate"""
         return (
             not self.is_end_of_line()
             and predicate(self.content[self.current_line][self.current_char])
@@ -59,6 +73,7 @@ class Buffer:
 
 
     def go_forward(self):
+        """Функция сдвигает курсор на 1 символ вперед и возвращает False, если курсор достиг конца буфера"""
         if self.is_end_of_line():
             if self.current_line == len(self.content) - 1:
                 return False
@@ -70,6 +85,7 @@ class Buffer:
 
 
     def go_backward(self):
+        """Функция сдвигает курсор на 1 символ назад и возвращает False, если курсор достиг начала буфера"""
         if self.current_char == 0:
             if self.current_line == 0:
                 return False
@@ -81,6 +97,7 @@ class Buffer:
 
 
     def go_to_next_word(self):
+        """Функция перемещает курсор на начало следующего слова"""
         while self.check_under_cursor(is_not_space):
             self.go_forward()
         while not self.check_under_cursor(is_not_space):
@@ -89,6 +106,7 @@ class Buffer:
 
 
     def go_to_prev_word(self):
+        """Функция перемещает курсор на конец предыдущего слова"""
         while self.check_under_cursor(is_not_space):
             if not self.go_backward():
                 break
@@ -98,14 +116,17 @@ class Buffer:
 
 
     def go_to_line_begin(self):
+        """Функция перемещает курсор на начало строчки"""
         self.current_char = 0
 
 
     def go_to_line_end(self):
+        """Функция перемещает курсор на конец строчки"""
         self.current_char = len(self.content[self.current_line])
 
 
-    def insert(self, char):
+    def insert(self, char: str):
+        """Функция вставляет под курсор символ char и сдвигает курсор на 1 символ вправо"""
         cur_line = self.content[self.current_line]
         self.content[self.current_line] = (
             cur_line[:self.current_char] + char + cur_line[self.current_char:]
@@ -114,6 +135,7 @@ class Buffer:
 
 
     def insert_new_line(self):
+        """Функция делит текущую строчку на две"""
         cur_line = self.content[self.current_line]
         self.content = self.content[:self.current_line] + [
             cur_line[:self.current_char], cur_line[self.current_char:]
@@ -123,6 +145,7 @@ class Buffer:
 
 
     def delete_char(self):
+        """Функция удаляет символ, предшествующий курсору"""
         if self.current_char == 0:
             if self.current_line > 0:
                 self.current_line -= 1
@@ -141,6 +164,7 @@ class Buffer:
 
 
     def delete_word(self):
+        """Функция удаляет слово под курсором"""
         if not self.check_under_cursor(is_not_space):
             return
         initial_pos = self.current_char
@@ -160,13 +184,15 @@ class Buffer:
 
 
     def delete_line(self):
+        """Функция удаляет текущую строчку"""
         self.content.pop(self.current_line)
         if len(self.content) == 0:
             self.content = ['']
         self.adjust_pos()
 
 
-    def next_occurrence(self, search_string):
+    def next_occurrence(self, search_string: str):
+        """Функция перемещает курсор на начало следующего вхождения search_string в содержимое буфера"""
         substr_begin = self.content[self.current_line].find(search_string, self.current_char + 1)
         if substr_begin != -1:
             self.current_char = substr_begin
@@ -181,7 +207,8 @@ class Buffer:
                 return
 
 
-    def draw(self, window, lines_cnt, cols_cnt):
+    def draw(self, window: curses.window, lines_cnt: int, cols_cnt: int):
+        """Функция печатает содержимое буфера в текстовое окно высоты lines_cnt и ширины cols_cnt"""
         window_lines = []
         cursor_x = -1
         cursor_y = -1

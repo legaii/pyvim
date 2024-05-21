@@ -5,7 +5,8 @@ from .app_ui import AppUI
 from .key_bindings import key_bindings
 
 
-def main(window):
+def main(window: curses.window):
+    """Функция, настраивающая базовые параметры curses.window и передающая управление окном AppUI"""
     curses.use_default_colors()
     window.clear()
     window.move(0, 0)

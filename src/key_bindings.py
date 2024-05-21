@@ -1,17 +1,21 @@
 import re
+from typing import Callable
 
 from .mode import Mode
 from .app_state import AppState
 
 
 class KeyBinding:
-    def __init__(self, mode, pattern, callback):
+    """Класс для хранения обработчика комбинации клавиш и условий, при котором этот обработчик вызывается"""
+
+    def __init__(self, mode: Mode, pattern: re.Pattern, callback: Callable[[AppState, ...], None]):
         self.mode = mode
         self.pattern = pattern
         self.callback = callback
 
 
-    def check(self, string, app_state):
+    def check(self, string: str, app_state: AppState):
+        """Функция пытается обработать комбинацию клавиш string с помощью обработчика callback"""
         if app_state.mode != self.mode:
             return False
         pattern_match = self.pattern.match(string)
@@ -21,86 +25,106 @@ class KeyBinding:
         return False
 
 
-def quit_callback(app_state):
+def quit_callback(app_state: AppState):
+    """Обработчки для выхода из приложения"""
     app_state.mode = Mode.quit_mode()
 
 
-def read_file_callback(app_state, file):
+def read_file_callback(app_state: AppState, file: str):
+    """Обработчик для чтения содержимого файла file"""
     app_state.file = file
     app_state.read()
 
 
-def write_file_callback(app_state, file):
+def write_file_callback(app_state: AppState, file: str):
+    """Обработчик для записи нового содержимого в файл file"""
     app_state.file = file
     app_state.write()
 
 
-def switch_to_normal_mode(app_state):
+def switch_to_normal_mode(app_state: AppState):
+    """Обработчик для перехода в режим NORMAL"""
     app_state.mode = Mode.normal_mode()
 
 
-def switch_to_insert_mode(app_state):
+def switch_to_insert_mode(app_state: AppState):
+    """Обработчик для перехода в режим INSERT"""
     app_state.mode = Mode.insert_mode()
 
 
-def delete_char_callback(app_state):
+def delete_char_callback(app_state: AppState):
+    """Обработчик для удаления символа под курсором"""
     app_state.buffer.delete_char()
 
 
-def insert_new_line_callback(app_state):
+def insert_new_line_callback(app_state: AppState):
+    """Обработчик для разделения текущей строчки на две"""
     app_state.buffer.insert_new_line()
 
 
-def insert_char_callback(app_state, char):
+def insert_char_callback(app_state: AppState, char: str):
+    """Обработчик для вставки символа char"""
     app_state.buffer.insert(char)
 
 
-def next_line_callback(app_state):
+def next_line_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на следующую строчку"""
     app_state.buffer.move_line(1)
 
 
-def prev_line_callback(app_state):
+def prev_line_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на предыдущую строчку"""
     app_state.buffer.move_line(-1)
 
 
-def next_char_callback(app_state):
+def next_char_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на следующий символ"""
     app_state.buffer.move_char(1)
 
 
-def prev_char_callback(app_state):
+def prev_char_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на предыдущий символ"""
     app_state.buffer.move_char(-1)
 
 
-def next_word_callback(app_state):
+def next_word_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на следующее слово"""
     app_state.buffer.go_to_next_word()
 
 
-def prev_word_callback(app_state):
+def prev_word_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на предыдущее слово"""
     app_state.buffer.go_to_prev_word()
 
 
-def line_begin_callback(app_state):
+def line_begin_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на начало текущей строчки"""
     app_state.buffer.go_to_line_begin()
 
 
-def line_end_callback(app_state):
+def line_end_callback(app_state: AppState):
+    """Обработчик для перемещения курсора на конец текущей строчки"""
     app_state.buffer.go_to_line_end()
 
 
-def delete_line_callback(app_state):
+def delete_line_callback(app_state: AppState):
+    """Обработчик для удаления текущей строчки"""
     app_state.buffer.delete_line()
 
 
-def delete_word_callback(app_state):
+def delete_word_callback(app_state: AppState):
+    """Обработчик для удаления текущего слова"""
     app_state.buffer.delete_word()
 
 
-def search_callback(app_state, search_string):
+def search_callback(app_state: AppState, search_string: str):
+    """Обработчик для поиска search_string в содержимом буфера"""
     app_state.search_string = search_string
     app_state.buffer.next_occurrence(search_string)
 
 
-def next_occurrence_callback(app_state):
+def next_occurrence_callback(app_state: AppState):
+    """Обработчик для поиска следующего вхождения строки, которую пользователь искал в предыдущий раз"""
     app_state.buffer.next_occurrence(app_state.search_string)
 
 
