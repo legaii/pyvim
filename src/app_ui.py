@@ -5,11 +5,11 @@ from .mode import Mode
 
 
 class AppUI:
-    def __init__(self, window, lines_cnt, cols_cnt, key_bindings):
+    def __init__(self, window, lines_cnt, cols_cnt, file, key_bindings):
         self.window = window
         self.lines_cnt = lines_cnt
         self.cols_cnt = cols_cnt
-        self.state = AppState()
+        self.state = AppState(file)
         self.key_binding_prefix = ""
         self.key_bindings = key_bindings
 
@@ -46,6 +46,7 @@ class AppUI:
         mode_line = self.state.mode.draw()
         status_line += ' ' * (self.cols_cnt - len(status_line) - len(mode_line))
         status_line += mode_line
+        status_line = status_line.replace('\n', '')
         self.window.addstr(self.lines_cnt - 1, 0, status_line, curses.A_BOLD)
         self.state.buffer.draw(self.window, self.lines_cnt - 1, self.cols_cnt)
         self.window.refresh()

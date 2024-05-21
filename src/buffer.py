@@ -10,13 +10,16 @@ class Buffer:
 
 
     def read_from(self, path):
-        with open(path, 'r') as file:
-            self.content = file.read().split('\n')
+        try:
+            with open(path, 'r') as file:
+                self.content = file.read().split('\n')
+        except FileNotFoundError:
+            pass
 
 
     def write_to(self, path):
         with open(path, 'w') as file:
-            file.write('\n'.join(content))
+            file.write('\n'.join(self.content))
 
 
     def adjust_pos(self):
@@ -180,9 +183,15 @@ class Buffer:
 
     def draw(self, window, lines_cnt, cols_cnt):
         window_lines = []
-        for line in self.content:
+        cursor_x = -1
+        cursor_y = -1
+        for line_index, line in enumerate(self.content):
             for block_begin in range(0, len(line) if len(line) > 0 else 1, cols_cnt):
-                window_lines.append(line[block_begin : block_begin + cols_cnt])
+                block_end = block_begin + cols_cnt
+                if self.current_line == line_index and block_begin <= self.current_char < block_end:
+                    cursor_x = self.current_char - block_begin
+                    cursor_y = len(window_lines)
+                window_lines.append(line[block_begin : block_end])
                 if len(window_lines) == lines_cnt:
                     break
             if len(window_lines) == lines_cnt:
@@ -190,4 +199,5 @@ class Buffer:
         window_lines += [''] * (lines_cnt - len(window_lines))
         for y_pos, line in enumerate(window_lines):
             window.addstr(y_pos, 0, line.ljust(cols_cnt))
-        window.move(self.current_line, self.current_char)
+        if cursor_x >= 0 and cursor_y >= 0:
+            window.move(cursor_y, cursor_x)

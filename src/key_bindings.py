@@ -1,6 +1,7 @@
 import re
 
 from .mode import Mode
+from .app_state import AppState
 
 
 class KeyBinding:
@@ -22,6 +23,16 @@ class KeyBinding:
 
 def quit_callback(app_state):
     app_state.mode = Mode.quit_mode()
+
+
+def read_file_callback(app_state, file):
+    app_state.file = file
+    app_state.read()
+
+
+def write_file_callback(app_state, file):
+    app_state.file = file
+    app_state.write()
 
 
 def switch_to_normal_mode(app_state):
@@ -96,7 +107,7 @@ def next_occurrence_callback(app_state):
 ESCAPE = chr(27)
 
 key_bindings = [
-    KeyBinding(Mode.normal_mode(), re.compile('.*' + ESCAPE), lambda _: None),
+    KeyBinding(Mode.normal_mode(), re.compile('.*' + ESCAPE, re.DOTALL), lambda _: None),
     KeyBinding(Mode.normal_mode(), re.compile('i'), switch_to_insert_mode),
     KeyBinding(Mode.normal_mode(), re.compile('h'), prev_char_callback),
     KeyBinding(Mode.normal_mode(), re.compile('j'), next_line_callback),
@@ -111,6 +122,9 @@ key_bindings = [
     KeyBinding(Mode.normal_mode(), re.compile('/(.*)\n'), search_callback),
     KeyBinding(Mode.normal_mode(), re.compile('n'), next_occurrence_callback),
     KeyBinding(Mode.normal_mode(), re.compile(':q\n'), quit_callback),
+    KeyBinding(Mode.normal_mode(), re.compile(':e (.*)\n'), read_file_callback),
+    KeyBinding(Mode.normal_mode(), re.compile(':w\n'), AppState.write),
+    KeyBinding(Mode.normal_mode(), re.compile(':w (.*)\n'), write_file_callback),
     KeyBinding(Mode.normal_mode(), re.compile('\n'), lambda _: None),
     KeyBinding(Mode.insert_mode(), re.compile(ESCAPE), switch_to_normal_mode),
     KeyBinding(Mode.insert_mode(), re.compile('\b'), delete_char_callback),

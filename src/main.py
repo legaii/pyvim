@@ -9,11 +9,11 @@ def main(window):
     curses.use_default_colors()
     window.clear()
     window.move(0, 0)
-    AppUI(window, curses.LINES, curses.COLS - 1, key_bindings).run()
+    AppUI(window, curses.LINES, curses.COLS - 1, sys.argv[1], key_bindings).run()
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 1:
+    if len(sys.argv) != 2:
         print('No file provided', file=sys.stderr)
         print('Syntax: pyvim file', file=sys.stderr)
         exit(1)
