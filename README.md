@@ -4,7 +4,12 @@
 Консольный текстовый редактор, обладающий базовыми возможностями Vim.
 
 ### Как запустить?
+* ```pip3 install -r requirements.txt```
 * ```python3 -m src.main INSERT_FILE_NAME_HERE```
+
+### Тесты
+* Запуск тестов: ```coverage run --source=src --omit=src/main.py -m unittest tests/*_test.py```
+* Показать процент покрытия: ```coverage report```
 
 ### Стек технологий
 * [Python](https://www.python.org/)
