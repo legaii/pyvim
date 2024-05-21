@@ -22,8 +22,12 @@ class Buffer:
     def adjust_pos(self):
         if self.current_line < 0:
             self.current_line = 0
-        elif self.current_line >= len(self.content):
+            self.current_char = 0
+            return
+        if self.current_line >= len(self.content):
             self.current_line = len(self.content) - 1
+            self.current_char = len(self.content[-1])
+            return
         if self.current_char < 0:
             self.current_char = 0
         elif self.current_char > len(self.content[self.current_line]):
@@ -75,8 +79,7 @@ class Buffer:
 
     def go_to_next_word(self):
         while self.check_under_cursor(is_not_space):
-            if not self.go_forward():
-                break
+            self.go_forward()
         while not self.check_under_cursor(is_not_space):
             if not self.go_forward():
                 break
@@ -132,6 +135,32 @@ class Buffer:
             self.content[self.current_line] = (
                 cur_line[:self.current_char] + cur_line[self.current_char + 1:]
             )
+
+
+    def delete_word(self):
+        if not self.check_under_cursor(is_not_space):
+            return
+        initial_pos = self.current_char
+        while self.check_under_cursor(is_not_space):
+            self.current_char += 1
+        while self.check_under_cursor(str.isspace):
+            self.current_char += 1
+        right_pos = self.current_char
+        self.current_char = initial_pos
+        while self.current_char >= 0 and self.check_under_cursor(is_not_space):
+            self.current_char -= 1
+        self.current_char += 1
+        cur_line = self.content[self.current_line]
+        self.content[self.current_line] = (
+            cur_line[:self.current_char] + cur_line[right_pos:]
+        )
+
+
+    def delete_line(self):
+        self.content.pop(self.current_line)
+        if len(self.content) == 0:
+            self.content = ['']
+        self.adjust_pos()
 
 
     def draw(self, window, lines_cnt, cols_cnt):
