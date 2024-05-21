@@ -149,6 +149,7 @@ key_bindings = [
     KeyBinding(Mode.normal_mode(), re.compile(':e (.*)\n'), read_file_callback),
     KeyBinding(Mode.normal_mode(), re.compile(':w\n'), AppState.write),
     KeyBinding(Mode.normal_mode(), re.compile(':w (.*)\n'), write_file_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('\b'), lambda _: None),
     KeyBinding(Mode.normal_mode(), re.compile('\n'), lambda _: None),
     KeyBinding(Mode.insert_mode(), re.compile(ESCAPE), switch_to_normal_mode),
     KeyBinding(Mode.insert_mode(), re.compile('\b'), delete_char_callback),

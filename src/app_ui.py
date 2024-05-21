@@ -1,6 +1,6 @@
 import curses
 
-from .key_bindings import KeyBinding
+from .key_bindings import KeyBinding, ESCAPE
 from .app_state import AppState
 from .mode import Mode
 
@@ -24,11 +24,21 @@ class AppUI:
     def transform_key(key: str):
         """Функция, преобразующая нестандартный ввод от пользователя в более удобный вид"""
         return {
+            curses.KEY_ENTER: '\n',
+            curses.KEY_BREAK: '\n',
+            curses.KEY_BACKSPACE: '\b',
+            curses.KEY_LEFT: 'h',
+            curses.KEY_DOWN: 'j',
+            curses.KEY_UP: 'k',
+            curses.KEY_RIGHT: 'l',
+            'KEY_ENTER': '\n',
+            'KEY_BREAK': '\n',
             'KEY_BACKSPACE': '\b',
             'KEY_LEFT': 'h',
             'KEY_DOWN': 'j',
             'KEY_UP': 'k',
             'KEY_RIGHT': 'l',
+            '\r': '\n',
         }.get(key, key)
 
 
@@ -37,7 +47,7 @@ class AppUI:
         while self.state.mode != Mode.quit_mode():
             self.redraw()
             key = self.transform_key(self.window.getkey())
-            if len(key) == 1:
+            if key.isprintable() or key in ('\n', '\b', ESCAPE):
                 self.read_char(key)
 
 

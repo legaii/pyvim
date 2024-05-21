@@ -8,6 +8,7 @@ from .key_bindings import key_bindings
 def main(window: curses.window):
     """Функция, настраивающая базовые параметры curses.window и передающая управление окном AppUI"""
     curses.use_default_colors()
+    window.keypad(True)
     window.clear()
     window.move(0, 0)
     AppUI(window, curses.LINES, curses.COLS - 1, sys.argv[1], key_bindings).run()
