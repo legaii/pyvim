@@ -11,6 +11,15 @@
 * Запуск тестов: ```coverage run --source=src --omit=src/main.py -m unittest tests/*_test.py```
 * Показать процент покрытия: ```coverage report```
 
+| Name                 |    Stmts |     Miss |    Cover |
+|--------------------- | -------: | -------: | -------: |
+| src/app\_state.py    |       13 |        0 |     100% |
+| src/app\_ui.py       |       35 |        0 |     100% |
+| src/buffer.py        |      143 |        0 |     100% |
+| src/key\_bindings.py |       61 |        0 |     100% |
+| src/mode.py          |       18 |        0 |     100% |
+|            **TOTAL** |  **270** |    **0** | **100%** |
+
 ### Стек технологий
 * [Python](https://www.python.org/)
 * Библиотека [curses](https://docs.python.org/3/library/curses.html)
