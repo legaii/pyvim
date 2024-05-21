@@ -15,6 +15,6 @@ def main(window):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('No file provided', file=sys.stderr)
-        print('Syntax: pyvim file', file=sys.stderr)
+        print('Syntax: python3 -m src.main FILE', file=sys.stderr)
         exit(1)
     curses.wrapper(main)
