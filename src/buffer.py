@@ -163,6 +163,21 @@ class Buffer:
         self.adjust_pos()
 
 
+    def next_occurrence(self, search_string):
+        substr_begin = self.content[self.current_line].find(search_string, self.current_char + 1)
+        if substr_begin != -1:
+            self.current_char = substr_begin
+            return
+        indexed_lines = list(enumerate(self.content))
+        indexed_lines = indexed_lines[self.current_line + 1:] + indexed_lines[:self.current_line + 1]
+        for line_index, line in indexed_lines:
+            substr_begin = line.find(search_string)
+            if substr_begin != -1:
+                self.current_line = line_index
+                self.current_char = substr_begin
+                return
+
+
     def draw(self, window, lines_cnt, cols_cnt):
         window_lines = []
         for line in self.content:

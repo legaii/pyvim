@@ -6,3 +6,4 @@ class AppState:
     def __init__(self):
         self.mode = Mode.normal_mode()
         self.buffer = Buffer()
+        self.search_string = ''

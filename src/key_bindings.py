@@ -84,6 +84,15 @@ def delete_word_callback(app_state):
     app_state.buffer.delete_word()
 
 
+def search_callback(app_state, search_string):
+    app_state.search_string = search_string
+    app_state.buffer.next_occurrence(search_string)
+
+
+def next_occurrence_callback(app_state):
+    app_state.buffer.next_occurrence(app_state.search_string)
+
+
 ESCAPE = chr(27)
 
 key_bindings = [
@@ -99,6 +108,8 @@ key_bindings = [
     KeyBinding(Mode.normal_mode(), re.compile('dd'), delete_line_callback),
     KeyBinding(Mode.normal_mode(), re.compile('daw'), delete_word_callback),
     KeyBinding(Mode.normal_mode(), re.compile(r'\$'), line_end_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('/(.*)\n'), search_callback),
+    KeyBinding(Mode.normal_mode(), re.compile('n'), next_occurrence_callback),
     KeyBinding(Mode.normal_mode(), re.compile(':q\n'), quit_callback),
     KeyBinding(Mode.normal_mode(), re.compile('\n'), lambda _: None),
     KeyBinding(Mode.insert_mode(), re.compile(ESCAPE), switch_to_normal_mode),
